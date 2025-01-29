@@ -1,6 +1,6 @@
 # Personalized Chatbot
 
-A web-based chatbot with **text, speech recognition, and text-to-speech** capabilities. The chatbot uses **Google Generative AI** to generate responses and supports **image generation**.
+A web-based chatbot with **text, speech recognition, and text-to-speech** capabilities. The chatbot uses **Google Generative AI** to generate responses.
 
 ## Features
 
