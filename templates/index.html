@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Personalized Chatbot</div>
+        <div id="chat-box"></div>
+        <div class="input-container">
+            <button onclick="startSpeechRecognition()">🎤</button>
+            <input type="text" id="user-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            let userInput = document.getElementById("user-input");
+            let chatBox = document.getElementById("chat-box");
+            let userMessage = userInput.value.trim();
+
+            if (userMessage === "") return;
+
+            chatBox.innerHTML += `<div class="message user-message">${userMessage}</div>`;
+            userInput.value = "";
+
+            let loadingMessage = document.createElement("div");
+            loadingMessage.className = "message bot-message loading";
+            loadingMessage.innerText = "Thinking...";
+            chatBox.appendChild(loadingMessage);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMessage })
+            });
+
+            let data = await response.json();
+            chatBox.removeChild(loadingMessage);
+
+            if (data.image_url) {
+                chatBox.innerHTML += `<div class="message bot-message"><img src="${data.image_url}" alt="Generated Image"></div>`;
+            } else {
+                chatBox.innerHTML += `<div class="message bot-message">${data.response}</div>`;
+                speakResponse(data.response);
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function startSpeechRecognition() {
+            let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = "auto";
+            recognition.start();
+
+            recognition.onresult = function(event) {
+                document.getElementById("user-input").value = event.results[0][0].transcript;
+            };
+        }
+
+        function speakResponse(text) {
+            let speech = new SpeechSynthesisUtterance(text);
+            speech.lang = "auto";
+            window.speechSynthesis.speak(speech);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+        
+    </script>
+</body>
+</html>
