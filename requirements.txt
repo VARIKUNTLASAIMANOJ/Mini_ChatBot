@@ -3,4 +3,4 @@ Flask-CORS
 SpeechRecognition
 gTTS
 google-generativeai
-python
+Python 3.12.7
