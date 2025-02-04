@@ -3,4 +3,3 @@ Flask-CORS
 SpeechRecognition
 gTTS
 google-generativeai
-Python == 3.12.7
